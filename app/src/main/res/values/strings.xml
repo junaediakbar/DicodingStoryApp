@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">DicodingStoryApp</string>
+    <string name="welcome">Welcome to Dicoding Story</string>
+    <string name="login_message">Please login before!</string>
+    <string name="email_hint" translatable="false">Email...</string>
+    <string name="password_hint" translatable="false">Password...</string>
+    <string name="register" translatable="false">Register</string>
+    <string name="login" translatable="false">Login</string>
+    <string name="story_image" translatable="false">%s</string>
+    <string name="nama_hint" translatable="false">Name...</string>
+    <string name="setting">Languages</string>
+    <string name="log_out">Log Out</string>
+    <string name="name_validation_message">Please use valid name</string>
+    <string name="password_validation_message">min. 6 character</string>
+    <string name="validation_error">Please use valid input</string>
+    <string name="register_success">Register Successfully</string>
+    <string name="login_success">Login successfully</string>
+    <string name="add_btn_description">Add new story</string>
+    <string name="auth" translatable="false">Bearer %1$s</string>
+    <string name="not_found">Not Found</string>
+    <string name="nama_user">Username</string>
+    <string name="home_greeting">Hi, Guys!</string>
+    <string name="home_welcome_greeting">Welcome to Dicoding Story</string>
+    <string name="upload">upload</string>
+    <string name="gallery">gallery</string>
+    <string name="camera">camera</string>
+    <string name="camera_x">cameraX</string>
+    <string name="add_description">tell a great caption...</string>
+    <string name="description">description.</string>
+    <string name="desc_validation_message">Description can\'t be empty</string>
+    <string name="desc_btn_camera">start camera</string>
+    <string name="desc_description">add description</string>
+    <string name="capture_image">capture image</string>
+    <string name="change_camera">change_camera</string>
+    <string name="detail_description">detail description</string>
+    <string name="username">username</string>
+    <string name="register_message">Register your self!</string>
+    <string name="appwidget_text" translatable="false">Dicoding Story</string>
+    <string name="add_widget" translatable="false">Add widget</string>
+    <string name="app_widget_description" translatable="false">This is an app widget description</string>
+    <string name="default_user">user undefined</string>
+    <string name="stories_content_description">story by %1$s</string>
+    <string name="widget_empty_data">"Data not found or not available"</string>
+    <string name="widget_login_text">Please login before!</string>
+    <string name="login_btn" translatable="false">Login</string>
+    <string name="logging_in">Trying to login...</string>
+    <string name="email_validation_message" translatable="false">Please input valid email</string>
+</resources>

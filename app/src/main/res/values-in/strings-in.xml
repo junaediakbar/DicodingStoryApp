@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DicodingStoryApp</string>
+    <string name="welcome">Selamat datang di Dicoding Story</string>
+    <string name="login_message" >Mohon login terlebih dahulu!</string>
+    <string name="setting">Bahasa</string>
+    <string name="log_out" >Keluar</string>
+    <string name="name_validation_message">Mohon masukkan nama dengan benar</string>
+    <string name="password_validation_message">min. 6 character</string>
+    <string name="validation_error">Mohon masukkan input dengan benar</string>
+    <string name="register_success">Berhasil terdaftar</string>
+    <string name="login_success">Berhasil login</string>
+    <string name="add_btn_description">Tambahkan story baru</string>
+    <string name="not_found">Tidak ditemukan</string>
+    <string name="nama_user">Nama user</string>
+    <string name="home_greeting">Hi, Teman!</string>
+    <string name="home_welcome_greeting">Selamat datang di Dicoding Story</string>
+    <string name="upload">upload</string>
+    <string name="gallery">gallery</string>
+    <string name="camera">camera</string>
+    <string name="camera_x">cameraX</string>
+    <string name="add_description">Masukkan caption yang indah</string>
+    <string name="description">deskripsi.</string>
+    <string name="desc_validation_message">Deskripsi tidak boleh kosong</string>
+    <string name="desc_btn_camera">start camera</string>
+    <string name="desc_description">add description</string>
+    <string name="capture_image">capture image</string>
+    <string name="change_camera">change_camera</string>
+    <string name="detail_description">detail description</string>
+    <string name="username">username</string>
+    <string name="register_message">Daftarkan dirimu!</string>
+    <string name="default_user">user tidak dikenali</string>
+    <string name="stories_content_description">Story oleh %1$s</string>
+    <string name="widget_empty_data">Data tidak ditemukan atau tidak dapat diakses</string>
+    <string name="widget_login_text" >Mohon login terlebih dahulu</string>
+    <string name="logging_in">mencoba login</string>
+
+</resources>
