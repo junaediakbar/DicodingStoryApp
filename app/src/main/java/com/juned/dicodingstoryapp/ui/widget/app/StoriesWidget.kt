@@ -65,9 +65,9 @@ class StoriesWidget : AppWidgetProvider() {
             )
 
             val views = RemoteViews(context.packageName, R.layout.stories_widget).apply {
-                setRemoteAdapter(R.id.stack_view, intent)
-                setEmptyView(R.id.stack_view, R.id.empty_view)
-                setPendingIntentTemplate(R.id.stack_view, toastPendingIntent)
+                setRemoteAdapter(R.id.sv_story, intent)
+                setEmptyView(R.id.sv_story, R.id.empty_view)
+                setPendingIntentTemplate(R.id.sv_story, toastPendingIntent)
             }
 
             appWidgetManager.updateAppWidget(appWidgetId, views)

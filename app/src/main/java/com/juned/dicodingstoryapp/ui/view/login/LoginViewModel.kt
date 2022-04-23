@@ -32,11 +32,11 @@ class LoginViewModel : ViewModel() {
                     val token = response.body()?.loginResult?.token ?: ""
                     _token.value = Event(token)
                 } else {
-                    val errorResponse = Gson().fromJson(
+                    val errorMessage = Gson().fromJson(
                         response.errorBody()?.charStream(),
                         MessageResponse::class.java
                     )
-                    _error.value = Event(errorResponse.message)
+                    _error.value = Event(errorMessage.message)
                 }
             }
 

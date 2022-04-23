@@ -33,12 +33,6 @@ class LoginActivity : AppCompatActivity() {
         _binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        binding?.btnToRegister?.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
         binding?.apply {
             edtEmail.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
@@ -53,6 +47,10 @@ class LoginActivity : AppCompatActivity() {
 
                 override fun validate(input: String) = input.length >= 6
             })
+
+            btnToRegister.setOnClickListener {
+                goToRegister()
+            }
 
             btnLogin.setOnClickListener {
                 tryLogin()
@@ -83,6 +81,12 @@ class LoginActivity : AppCompatActivity() {
                 goToHome()
             }
         }
+    }
+
+    private fun goToRegister(){
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun loggedIn(token: String) {
@@ -124,7 +128,4 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.hide()
     }
 
-    companion object {
-        const val EXTRA_EMAIL = "extra_email"
-    }
 }

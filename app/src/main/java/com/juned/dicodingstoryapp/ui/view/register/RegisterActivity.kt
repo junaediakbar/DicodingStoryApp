@@ -24,12 +24,6 @@ class RegisterActivity : AppCompatActivity() {
         _binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        binding?.btnToLogin?.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
         binding?.apply {
             edtNama.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
@@ -55,7 +49,10 @@ class RegisterActivity : AppCompatActivity() {
             btnRegister.setOnClickListener {
                 tryRegister()
                 hideKeyboard(this@RegisterActivity)
+            }
 
+            btnToLogin.setOnClickListener {
+              goToLogin()
             }
 
         }
@@ -68,7 +65,7 @@ class RegisterActivity : AppCompatActivity() {
             isSuccess.observe(this@RegisterActivity) {
                 it.getContentIfNotHandled()?.let { success ->
                     if (success) {
-                        registered()
+                        registerSuccess()
                     }
                 }
             }
@@ -81,12 +78,15 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun registered() {
+    private fun goToLogin(){
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun registerSuccess() {
         binding?.root?.let { showSnackBar(it, getString(R.string.register_success)) }
         val intent= Intent(this@RegisterActivity, LoginActivity::class.java)
-            .apply {
-                putExtra(LoginActivity.EXTRA_EMAIL, binding?.edtEmail.toString())
-            }
         startActivity(intent)
         finish()
     }

@@ -24,6 +24,7 @@ class RegisterViewModel: ViewModel() {
 
     fun register(name: String, email: String, password: String) {
         _isLoading.value = true
+
         ApiConfig.getApiService().register(name, email, password)
             .enqueue(object : Callback<MessageResponse> {
                 override fun onResponse(
@@ -35,11 +36,11 @@ class RegisterViewModel: ViewModel() {
                     if (response.isSuccessful) {
                         _isSuccess.value = Event(true)
                     } else {
-                        val errorResponse = Gson().fromJson(
+                        val errorMessage = Gson().fromJson(
                             response.errorBody()?.charStream(),
                             MessageResponse::class.java
                         )
-                        _error.value = Event(errorResponse.message)
+                        _error.value = Event(errorMessage.message)
                     }
                 }
 

@@ -42,11 +42,11 @@ class HomeViewModel (private val token: String): ViewModel() {
                     if (response.isSuccessful) {
                         _stories.value = response.body()?.listStory
                     } else {
-                        val errorResponse = Gson().fromJson(
-                            response.errorBody()!!.charStream(),
+                        val errorMessage = Gson().fromJson(
+                            response.errorBody()?.charStream(),
                             MessageResponse::class.java
                         )
-                        _error.value = Event(errorResponse.message)
+                        _error.value = Event(errorMessage.message)
                     }
                 }
 

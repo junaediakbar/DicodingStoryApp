@@ -71,7 +71,7 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
         }
 
         binding.apply {
-            emailInput.setValidationCallback(object : EditTextGeneral.InputValidation {
+            edtEmail.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
                     get() = getString(R.string.email_validation_message)
 
@@ -79,23 +79,23 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
                         && Patterns.EMAIL_ADDRESS.matcher(input).matches()
             })
 
-            passwordInput.setValidationCallback(object : EditTextGeneral.InputValidation {
+            edtPassword.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
                     get() = getString(R.string.password_validation_message)
 
                 override fun validate(input: String) = input.length >= 6
             })
 
-            login.setOnClickListener {
-                val isEmailValid = emailInput.validateInput()
-                val isPasswordValid = passwordInput.validateInput()
+            btnLogin.setOnClickListener {
+                val isEmailValid = edtEmail.validateInput()
+                val isPasswordValid = edtPassword.validateInput()
 
                 if (!isEmailValid || !isPasswordValid) {
                     showSnackBar(root, getString(R.string.validation_error))
                     return@setOnClickListener
                 }
 
-                loginViewModel.login(emailInput.text.toString(), passwordInput.text.toString())
+                loginViewModel.login(edtEmail.text.toString(), edtPassword.text.toString())
             }
         }
 
@@ -113,9 +113,10 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.apply {
-            loginGroup.visibility = visibility(!isLoading)
-            loginLoadingGroup.visibility = visibility(isLoading)
+        if (isLoading) {
+            binding.progressBar.visibility = visibility(true)
+        } else {
+            binding.progressBar.visibility = visibility(false)
         }
     }
 

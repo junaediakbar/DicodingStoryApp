@@ -67,11 +67,15 @@ class HomeActivity : AppCompatActivity() {
 
         }
         binding?.btnAddStory?.setOnClickListener{
-            val intent = Intent(this@HomeActivity, AddStoryActivity::class.java).apply {
-                putExtra(AddStoryActivity.EXTRA_TOKEN,token)
-            }
-            startActivity(intent)
+                startAddStory()
         }
+    }
+
+    private fun startAddStory(){
+        val intent = Intent(this@HomeActivity, AddStoryActivity::class.java).apply {
+            putExtra(AddStoryActivity.EXTRA_TOKEN,token)
+        }
+        startActivity(intent)
     }
 
     private fun setStories(stories: ArrayList<StoryItem>) {
