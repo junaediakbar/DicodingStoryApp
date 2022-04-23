@@ -21,7 +21,12 @@
         android:theme="@style/Theme.DicodingStoryApp">
         <activity
             android:name=".ui.widget.app.StoriesWidgetConfigureActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+
+        </activity>
 
         <receiver
             android:name=".ui.widget.app.StoriesWidget"

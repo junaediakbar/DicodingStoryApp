@@ -2,21 +2,18 @@ package com.juned.dicodingstoryapp.ui.view.story
 
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import com.juned.dicodingstoryapp.R
 import com.juned.dicodingstoryapp.databinding.ActivityAddStoryBinding
 import com.juned.dicodingstoryapp.helper.*
@@ -137,17 +134,6 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
     private lateinit var currentPhotoPath: String
-    private val launcherIntentCamera = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == RESULT_OK) {
-            val myFile = File(currentPhotoPath)
-            getFile = myFile
-
-            val result = BitmapFactory.decodeFile(myFile.path)
-            binding?.previewImageView?.setImageBitmap(result)
-        }
-    }
 
     private val launcherIntentGallery = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

@@ -8,12 +8,8 @@ import android.content.Intent
 import android.os.Build
 import android.widget.RemoteViews
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.core.net.toUri
 import com.juned.dicodingstoryapp.R
-import com.juned.dicodingstoryapp.data.pref.SessionPreferences
-import com.juned.dicodingstoryapp.ui.view.SessionViewModel
-import com.juned.dicodingstoryapp.ui.view.home.dataStore
 
 class StoriesWidget : AppWidgetProvider() {
 
