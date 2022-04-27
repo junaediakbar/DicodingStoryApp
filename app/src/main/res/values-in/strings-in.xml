@@ -34,5 +34,6 @@
     <string name="widget_empty_data">Data tidak ditemukan atau tidak dapat diakses</string>
     <string name="widget_login_text" >Mohon login terlebih dahulu</string>
     <string name="logging_in">mencoba login</string>
+    <string name="error_upload_empty">Silakan masukkan berkas gambar terlebih dahulu.</string>
 
 </resources>

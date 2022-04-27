@@ -113,11 +113,7 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding.progressBar.visibility = visibility(true)
-        } else {
-            binding.progressBar.visibility = visibility(false)
-        }
+        binding.progressBar.visibility = visibility(isLoading)
     }
 
     private fun showWidget() {

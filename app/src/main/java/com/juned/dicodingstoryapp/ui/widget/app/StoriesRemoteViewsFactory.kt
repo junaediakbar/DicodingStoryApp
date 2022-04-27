@@ -46,6 +46,10 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
             Log.e(TAG, "onResponse: ${e.message}")
             e.printStackTrace()
         }
+        if(token=="" ||token.isEmpty()){
+            stories.clear()
+        }
+
     }
 
     override fun onDestroy() {

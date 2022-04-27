@@ -33,6 +33,41 @@ class LoginActivity : AppCompatActivity() {
         _binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
+        setupTextField()
+        setupButton()
+        setupSignifier()
+        checkIsLogin()
+
+    }
+
+    private fun checkIsLogin(){
+        sessionViewModel.getToken().observe(this@LoginActivity) {
+            if (it.isNotEmpty()) {
+                goToHome()
+            }
+        }
+    }
+
+    private fun setupSignifier(){
+        loginViewModel.apply {
+            isLoading.observe(this@LoginActivity, ::showLoading)
+
+
+            token.observe(this@LoginActivity) {e->
+                e.getContentIfNotHandled()?.let {
+                    loggedIn(it)
+                }
+            }
+
+            error.observe(this@LoginActivity) { e ->
+                e.getContentIfNotHandled()?.let { message ->
+                    binding?.root?.let { showSnackBar(it, message) }
+                }
+            }
+        }
+    }
+
+    private fun setupTextField(){
         binding?.apply {
             edtEmail.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
@@ -47,7 +82,11 @@ class LoginActivity : AppCompatActivity() {
 
                 override fun validate(input: String) = input.length >= 6
             })
+        }
+    }
 
+    private fun setupButton(){
+        binding?.apply {
             btnToRegister.setOnClickListener {
                 goToRegister()
             }
@@ -55,30 +94,6 @@ class LoginActivity : AppCompatActivity() {
             btnLogin.setOnClickListener {
                 tryLogin()
                 hideKeyboard(this@LoginActivity)
-            }
-        }
-
-        loginViewModel.apply {
-            isLoading.observe(this@LoginActivity) {
-                showLoading(it)
-            }
-
-            token.observe(this@LoginActivity) {e->
-                e.getContentIfNotHandled()?.let {
-                    loggedIn(it)
-                }
-            }
-
-            error.observe(this@LoginActivity) { e ->
-                e.getContentIfNotHandled()?.let { message ->
-                    binding?.root?.let { showSnackBar(it, message) }
-                }
-            }
-        }
-
-        sessionViewModel.getToken().observe(this@LoginActivity) {
-            if (it.isNotEmpty()) {
-                goToHome()
             }
         }
     }
@@ -116,11 +131,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding?.progressBar?.visibility = visibility(true)
-        } else {
-            binding?.progressBar?.visibility = visibility(false)
-        }
+        binding?.progressBar?.visibility = visibility(isLoading)
     }
 
     override fun onResume() {

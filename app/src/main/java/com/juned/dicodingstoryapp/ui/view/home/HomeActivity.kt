@@ -32,6 +32,7 @@ class HomeActivity : AppCompatActivity() {
     private val sessionViewModel by viewModels<SessionViewModel> {
         SessionViewModel.Factory(SessionPreferences.getInstance(dataStore))
     }
+
     private var token = ""
 
     private var _binding: ActivityHomeBinding? = null
@@ -41,7 +42,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding?.root)
-        println("ini apa?" + sessionViewModel.getToken().toString())
 
         sessionViewModel.getToken().observe(this@HomeActivity) { token ->
             this.token = token

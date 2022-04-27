@@ -24,39 +24,12 @@ class RegisterActivity : AppCompatActivity() {
         _binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        binding?.apply {
-            edtNama.setValidationCallback(object : EditTextGeneral.InputValidation {
-                override val errorMessage: String
-                    get() = getString(R.string.name_validation_message)
+        setupTextField()
+        setupButton()
+        setupSignifier()
+    }
 
-                override fun validate(input: String) = input.isNotEmpty()
-            })
-
-            edtEmail.setValidationCallback(object : EditTextGeneral.InputValidation {
-                override val errorMessage: String
-                    get() = getString(R.string.name_validation_message)
-
-                override fun validate(input: String) = input.isNotEmpty()
-            })
-
-            edtPassword.setValidationCallback(object : EditTextGeneral.InputValidation {
-                override val errorMessage: String
-                    get() = getString(R.string.password_validation_message)
-
-                override fun validate(input: String) = input.length >= 6
-            })
-
-            btnRegister.setOnClickListener {
-                tryRegister()
-                hideKeyboard(this@RegisterActivity)
-            }
-
-            btnToLogin.setOnClickListener {
-              goToLogin()
-            }
-
-        }
-
+    private fun setupSignifier(){
         viewModel.apply {
             isLoading.observe(this@RegisterActivity) {
                 showLoading(it)
@@ -78,6 +51,45 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupTextField(){
+        binding?.apply {
+            edtNama.setValidationCallback(object : EditTextGeneral.InputValidation {
+                override val errorMessage: String
+                    get() = getString(R.string.name_validation_message)
+
+                override fun validate(input: String) = input.isNotEmpty()
+            })
+
+            edtEmail.setValidationCallback(object : EditTextGeneral.InputValidation {
+                override val errorMessage: String
+                    get() = getString(R.string.name_validation_message)
+
+                override fun validate(input: String) = input.isNotEmpty()
+            })
+
+            edtPassword.setValidationCallback(object : EditTextGeneral.InputValidation {
+                override val errorMessage: String
+                    get() = getString(R.string.password_validation_message)
+
+                override fun validate(input: String) = input.length >= 6
+            })
+        }
+    }
+
+    private fun setupButton(){
+        binding?.apply {
+            btnRegister.setOnClickListener {
+                tryRegister()
+                hideKeyboard(this@RegisterActivity)
+            }
+
+            btnToLogin.setOnClickListener {
+                goToLogin()
+            }
+
+        }
+    }
+
     private fun goToLogin(){
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
@@ -92,29 +104,24 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding?.progressBar?.visibility = visibility(true)
-        } else {
-            binding?.progressBar?.visibility = visibility(false)
-        }
+        binding?.progressBar?.visibility = visibility(isLoading)
     }
-
     private fun tryRegister() {
-        with(binding) {
+        binding?.apply {
 
-            val isNameValid = this?.edtNama?.validateInput()
-            val isEmailValid = this?.edtEmail?.validateInput()
-            val isPasswordValid = this?.edtPassword?.validateInput()
+            val isNameValid =edtNama.validateInput()
+            val isEmailValid = edtEmail.validateInput()
+            val isPasswordValid = edtPassword.validateInput()
 
-            if (!isNameValid!! || !isEmailValid!! || !isPasswordValid!!) {
+            if (!isNameValid || !isEmailValid || !isPasswordValid) {
                 binding?.root?.let { showSnackBar(it, getString(R.string.validation_error)) }
                 return
             }
 
             viewModel.register(
-                this?.edtNama?.text.toString(),
-                this?.edtEmail?.text.toString(),
-                this?.edtPassword?.text.toString()
+                edtNama.text.toString(),
+                edtEmail.text.toString(),
+                edtPassword.text.toString()
             )
         }
     }

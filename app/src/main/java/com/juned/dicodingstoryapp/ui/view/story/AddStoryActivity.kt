@@ -26,7 +26,7 @@ class AddStoryActivity : AppCompatActivity() {
     private var _binding: ActivityAddStoryBinding? = null
     private val binding get() = _binding
 
-    private var getFile: File? = null
+    private var tempTakenImageFile: File? = null
 
     private val addStoryViewModel by viewModels<AddStoryViewModel>()
 
@@ -81,12 +81,8 @@ class AddStoryActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun showLoading(isLoading: Boolean){
-        if (isLoading) {
-            binding?.uploadProgressBar?.visibility = visibility(true)
-        } else {
-            binding?.uploadProgressBar?.visibility = visibility(false)
-        }
+    private fun showLoading(isLoading: Boolean) {
+        binding?.uploadProgressBar?.visibility = visibility(isLoading)
     }
 
 
@@ -105,14 +101,14 @@ class AddStoryActivity : AppCompatActivity() {
 
 
     private fun uploadImage() {
-        if (getFile != null && binding?.tvDescription?.validateInput() == true) {
-            val file = reduceFileImage(getFile as File)
+        if (tempTakenImageFile != null && binding?.tvDescription?.validateInput() == true) {
+            val file = reduceFileImage(tempTakenImageFile as File)
 
             val description = binding?.tvDescription?.text.toString()
             val token = intent.getStringExtra(EXTRA_TOKEN).toString()
             addStoryViewModel.uploadStory(file,description,   getString(R.string.auth, token) )
         }else{
-            Toast.makeText(this@AddStoryActivity, "Silakan masukkan berkas gambar terlebih dahulu.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@AddStoryActivity, R.string.error_upload_empty, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -121,19 +117,16 @@ class AddStoryActivity : AppCompatActivity() {
     ) {
         if (it.resultCode == CAMERA_X_RESULT) {
             val myFile = it.data?.getSerializableExtra("picture") as File
-            val isBackCamera = it.data?.getBooleanExtra("isBackCamera", true) as Boolean
+            it.data?.getBooleanExtra("isBackCamera", true) as Boolean
 
-            getFile = myFile
-            val result = rotateBitmap(
-                BitmapFactory.decodeFile(myFile.path),
-                isBackCamera
-            )
+            tempTakenImageFile = myFile
+            val result = BitmapFactory.decodeFile(myFile.path)
+
+
 
             binding?.previewImageView?.setImageBitmap(result)
         }
     }
-
-    private lateinit var currentPhotoPath: String
 
     private val launcherIntentGallery = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -141,7 +134,7 @@ class AddStoryActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             val selectedImg: Uri = result.data?.data as Uri
             val myFile = uriToFile(selectedImg, this@AddStoryActivity)
-            getFile = myFile
+            tempTakenImageFile = myFile
 
             binding?.previewImageView?.setImageURI(selectedImg)
         }
