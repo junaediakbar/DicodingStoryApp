@@ -12,10 +12,8 @@ import com.juned.dicodingstoryapp.data.api.ApiConfig
 import com.juned.dicodingstoryapp.data.api.response.StoryItem
 import com.juned.dicodingstoryapp.data.pref.SessionPreferences
 import com.juned.dicodingstoryapp.ui.view.home.dataStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 internal class StoriesRemoteViewsFactory(private val context: Context) :
     RemoteViewsService.RemoteViewsFactory {
@@ -25,31 +23,18 @@ internal class StoriesRemoteViewsFactory(private val context: Context) :
         //
     }
 
-    override fun onDataSetChanged() {
-        var token = ""
+    override fun onDataSetChanged(): Unit = runBlocking {
         val pref = SessionPreferences.getInstance(context.dataStore)
-        CoroutineScope(Dispatchers.Main).launch {
-            pref.getSavedToken().collect {
-                token = it
-            }
-        }
+        val auth = context.getString(R.string.auth, pref.getSavedToken().first())
 
         try {
-            val listStories = ApiConfig.getApiService()
-                .getAllStories(context.getString(R.string.auth, token))
-                .execute()
-                .body()
-                ?.listStory as List<StoryItem>
             stories.clear()
-            stories.addAll(listStories)
+            stories.addAll(ApiConfig.getApiService()
+                .getAllStories(auth, 0).listStory)
         } catch (e: Exception) {
             Log.e(TAG, "onResponse: ${e.message}")
             e.printStackTrace()
         }
-        if(token=="" ||token.isEmpty()){
-            stories.clear()
-        }
-
     }
 
     override fun onDestroy() {

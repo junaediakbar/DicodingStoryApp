@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cyan_200">#99e9f2</color>
     <color name="cyan_500">#15aabf</color>
     <color name="cyan_700">#1098ad</color>
     <color name="teal_200">#20c997</color>
@@ -9,8 +8,4 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey_200">#f1f3f5</color>
     <color name="grey_500">#adb5bd</color>
-    <color name="light_blue_50">#FFE1F5FE</color>
-    <color name="light_blue_200">#FF81D4FA</color>
-    <color name="light_blue_600">#FF039BE5</color>
-    <color name="light_blue_900">#FF01579B</color>
 </resources>

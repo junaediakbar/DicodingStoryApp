@@ -15,20 +15,23 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.juned.dicodingstoryapp.R
-import com.juned.dicodingstoryapp.data.adapter.StoriesAdapter
-import com.juned.dicodingstoryapp.data.api.response.StoryItem
+import com.juned.dicodingstoryapp.data.api.ApiConfig
+import com.juned.dicodingstoryapp.data.database.StoryDatabase
+import com.juned.dicodingstoryapp.data.paging.LoadingStateAdapter
+import com.juned.dicodingstoryapp.data.paging.StoriesAdapter
 import com.juned.dicodingstoryapp.data.pref.SessionPreferences
+import com.juned.dicodingstoryapp.data.repository.StoryRepository
 import com.juned.dicodingstoryapp.databinding.ActivityHomeBinding
 import com.juned.dicodingstoryapp.helper.visibility
+import com.juned.dicodingstoryapp.ui.view.SessionViewModel
 import com.juned.dicodingstoryapp.ui.view.login.LoginActivity
 import com.juned.dicodingstoryapp.ui.view.story.AddStoryActivity
-import com.juned.dicodingstoryapp.ui.view.SessionViewModel
+import com.juned.dicodingstoryapp.ui.view.storywithmaps.StoryWithMapsActivity
+
 
 internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
 
 class HomeActivity : AppCompatActivity() {
-
-
     private val sessionViewModel by viewModels<SessionViewModel> {
         SessionViewModel.Factory(SessionPreferences.getInstance(dataStore))
     }
@@ -42,33 +45,66 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+        showLoading(true)
 
         sessionViewModel.getToken().observe(this@HomeActivity) { token ->
             this.token = token
             if (token.isEmpty() || token == "") {
                 goToLogin()
+
             } else {
-                val homeViewModel by viewModels<HomeViewModel> {
-                    HomeViewModel.Factory(getString(R.string.auth, token))
-                }
-
-                homeViewModel.apply {
-                    isLoading.observe(this@HomeActivity) {
-                        showLoading(it)
-                    }
-
-                    stories.observe(this@HomeActivity) {
-                        setStories(ArrayList(it))
-                        binding?.tvNotFound?.visibility = visibility(it.isEmpty())
-                    }
-
-                }
+                setStories()
             }
+        }
 
-        }
         binding?.btnAddStory?.setOnClickListener{
-                startAddStory()
+            startAddStory()
         }
+
+        binding?.btnToMaps?.setOnClickListener{
+            startMaps()
+        }
+
+    }
+
+    private fun setStories(){
+        val viewModel by viewModels<HomeViewModel> {
+            HomeViewModel.Factory(
+                StoryRepository(
+                    StoryDatabase.getDatabase(this@HomeActivity),
+                    ApiConfig.getApiService(),
+                    getString(R.string.auth, token)
+                )
+            )
+        }
+
+        val adapter = StoriesAdapter()
+        binding?.apply {
+            rvHomeStories.layoutManager = if (resources.configuration.orientation
+                == Configuration.ORIENTATION_PORTRAIT
+            ) {
+                LinearLayoutManager(this@HomeActivity)
+            } else {
+                GridLayoutManager(this@HomeActivity, 2)
+            }
+            rvHomeStories.adapter = adapter.withLoadStateFooter(
+                footer = LoadingStateAdapter {
+                    adapter.retry()
+                }
+            )
+            showLoading(false)
+        }
+
+        viewModel.stories.observe(this) {
+            adapter.submitData(lifecycle, it)
+        }
+    }
+
+    private fun startMaps(){
+        val intent = Intent(this@HomeActivity, StoryWithMapsActivity::class.java).apply {
+            putExtra(AddStoryActivity.EXTRA_TOKEN,token)
+        }
+        startActivity(intent)
     }
 
     private fun startAddStory(){
@@ -78,45 +114,14 @@ class HomeActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun setStories(stories: ArrayList<StoryItem>) {
-        showLoading(true)
-        binding?.apply {
-            rvStories.layoutManager = if (resources.configuration.orientation
-                == Configuration.ORIENTATION_PORTRAIT
-            ) {
-                LinearLayoutManager(this@HomeActivity)
-            } else {
-                GridLayoutManager(this@HomeActivity, 2)
-            }
-
-            rvStories.setHasFixedSize(true)
-            rvStories.adapter = StoriesAdapter(stories)
-
-            tvNotFound.apply {
-                if (stories.isEmpty()) {
-                    visibility = visibility(true)
-                    text = getString(R.string.not_found)
-                } else {
-                    visibility = visibility(false)
-                }
-            }
-            showLoading(false)
-        }
-
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding?.storyProgressBar?.visibility = visibility(true)
-        } else {
-            binding?.storyProgressBar?.visibility = visibility(false)
-        }
-    }
-
     private fun goToLogin() {
         val intent = Intent(this@HomeActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding?.progressBarHome?.visibility = visibility(isLoading)
     }
 
     override fun onResume() {

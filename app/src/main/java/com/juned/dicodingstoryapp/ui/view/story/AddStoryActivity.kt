@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -14,7 +15,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.juned.dicodingstoryapp.R
+import com.juned.dicodingstoryapp.data.api.ApiConfig
+import com.juned.dicodingstoryapp.data.database.StoryDatabase
+import com.juned.dicodingstoryapp.data.repository.StoryRepository
 import com.juned.dicodingstoryapp.databinding.ActivityAddStoryBinding
 import com.juned.dicodingstoryapp.helper.*
 import com.juned.dicodingstoryapp.ui.view.home.HomeActivity
@@ -28,12 +34,17 @@ class AddStoryActivity : AppCompatActivity() {
 
     private var tempTakenImageFile: File? = null
 
-    private val addStoryViewModel by viewModels<AddStoryViewModel>()
+    private var location: Location? = null
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ActivityAddStoryBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (!allPermissionsGranted()) {
             ActivityCompat.requestPermissions(
@@ -42,6 +53,19 @@ class AddStoryActivity : AppCompatActivity() {
                 REQUEST_CODE_PERMISSIONS
             )
         }
+
+        val token = intent.getStringExtra(EXTRA_TOKEN).toString()
+
+        val addStoryViewModel  by viewModels<AddStoryViewModel> {
+            AddStoryViewModel.Factory(
+                StoryRepository(
+                    StoryDatabase.getDatabase(this@AddStoryActivity),
+                    ApiConfig.getApiService(),
+                    getString(R.string.auth, token)
+                )
+            )
+        }
+
         binding?.apply {
             tvDescription.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
@@ -51,7 +75,7 @@ class AddStoryActivity : AppCompatActivity() {
 
             cameraXButton.setOnClickListener { startCameraX() }
             galleryButton.setOnClickListener { startGallery() }
-            uploadButton.setOnClickListener { uploadImage() }
+            uploadButton.setOnClickListener { uploadImage(addStoryViewModel) }
         }
 
         addStoryViewModel.apply {
@@ -73,6 +97,7 @@ class AddStoryActivity : AppCompatActivity() {
                 }
             }
         }
+        getLocation()
     }
 
     private fun goToHome(){
@@ -83,6 +108,7 @@ class AddStoryActivity : AppCompatActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         binding?.uploadProgressBar?.visibility = visibility(isLoading)
+        binding?.uploadLoadingText?.visibility = visibility(isLoading)
     }
 
 
@@ -100,13 +126,12 @@ class AddStoryActivity : AppCompatActivity() {
     }
 
 
-    private fun uploadImage() {
+    private fun uploadImage(viewModel: AddStoryViewModel) {
         if (tempTakenImageFile != null && binding?.tvDescription?.validateInput() == true) {
             val file = reduceFileImage(tempTakenImageFile as File)
 
             val description = binding?.tvDescription?.text.toString()
-            val token = intent.getStringExtra(EXTRA_TOKEN).toString()
-            addStoryViewModel.uploadStory(file,description,   getString(R.string.auth, token) )
+            viewModel.uploadStory(file,description, location )
         }else{
             Toast.makeText(this@AddStoryActivity, R.string.error_upload_empty, Toast.LENGTH_SHORT).show()
         }
@@ -124,7 +149,7 @@ class AddStoryActivity : AppCompatActivity() {
 
 
 
-            binding?.previewImageView?.setImageBitmap(result)
+            binding?.imgUploadPreview?.setImageBitmap(result)
         }
     }
 
@@ -136,7 +161,7 @@ class AddStoryActivity : AppCompatActivity() {
             val myFile = uriToFile(selectedImg, this@AddStoryActivity)
             tempTakenImageFile = myFile
 
-            binding?.previewImageView?.setImageURI(selectedImg)
+            binding?.imgUploadPreview?.setImageURI(selectedImg)
         }
     }
 
@@ -162,11 +187,55 @@ class AddStoryActivity : AppCompatActivity() {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (!allPermissionsGranted()) {
+            binding?.root?.let {
+                showSnackBar(it, getString(R.string.permission_denied))
+            }
+        }
+    }
+
+
+    private fun getLocation() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    binding?.locationText?.text=getString(R.string.location,location.latitude,location.longitude)
+                } else {
+                    Toast.makeText(
+                        this@AddStoryActivity,
+                        "Location is not found. Try Again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
     companion object {
         const val CAMERA_X_RESULT = 200
         const val EXTRA_TOKEN = "extra_token"
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
         private const val REQUEST_CODE_PERMISSIONS = 10
     }
+
 
 }

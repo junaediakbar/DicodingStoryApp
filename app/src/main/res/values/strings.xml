@@ -17,13 +17,11 @@
     <string name="login_success">Login successfully</string>
     <string name="add_btn_description">Add new story</string>
     <string name="auth" translatable="false">Bearer %1$s</string>
-    <string name="not_found">Not Found</string>
     <string name="nama_user">Username</string>
     <string name="home_greeting">Hi, Guys!</string>
     <string name="home_welcome_greeting">Welcome to Dicoding Story</string>
     <string name="upload">upload</string>
     <string name="gallery">gallery</string>
-    <string name="camera">camera</string>
     <string name="camera_x">cameraX</string>
     <string name="add_description">tell a great caption…</string>
     <string name="description">description.</string>
@@ -33,17 +31,19 @@
     <string name="capture_image">capture image</string>
     <string name="change_camera">change_camera</string>
     <string name="detail_description">detail description</string>
-    <string name="username">username</string>
     <string name="register_message">Register your self!</string>
     <string name="appwidget_text" translatable="false">Dicoding Story</string>
-    <string name="add_widget" translatable="false">Add widget</string>
     <string name="app_widget_description" translatable="false">This is an app widget description</string>
     <string name="default_user">user undefined</string>
     <string name="stories_content_description">story by %1$s</string>
     <string name="widget_empty_data">"Data not found or not available"</string>
-    <string name="widget_login_text">Please login before!</string>
-    <string name="login_btn" translatable="false">Login</string>
-    <string name="logging_in">Trying to login...</string>
     <string name="email_validation_message" translatable="false">Please input valid email</string>
     <string name="error_upload_empty">Please input the image file before.</string>
+    <string name="generic_error">Something\'s wrong</string>
+    <string name="loading_data">Loading....</string>
+    <string name="title_activity_story_with_maps" translatable="false">StoryWithMapsActivity</string>
+    <string name="marker_snippet">Click to open the story</string>
+    <string name="retry">retry</string>
+    <string name="location" translatable="false">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="permission_denied">Permisision Denied!</string>
 </resources>

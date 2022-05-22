@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.juned.dicodingstoryapp.R
+import com.juned.dicodingstoryapp.data.api.ApiConfig
+import com.juned.dicodingstoryapp.data.repository.AuthRepository
 import com.juned.dicodingstoryapp.databinding.ActivityRegisterBinding
 import com.juned.dicodingstoryapp.helper.hideKeyboard
 import com.juned.dicodingstoryapp.helper.showSnackBar
@@ -14,7 +16,13 @@ import com.juned.dicodingstoryapp.ui.widget.text.EditTextGeneral
 
 class RegisterActivity : AppCompatActivity() {
 
-    private val viewModel by viewModels<RegisterViewModel>()
+    private val registerViewModel by viewModels<RegisterViewModel> {
+        RegisterViewModel.Factory(
+            AuthRepository(
+            ApiConfig.getApiService()
+        )
+        )
+    }
 
     private var _binding: ActivityRegisterBinding? = null
     private val binding get() = _binding
@@ -29,8 +37,13 @@ class RegisterActivity : AppCompatActivity() {
         setupSignifier()
     }
 
+    override fun onResume() {
+        super.onResume()
+        supportActionBar?.hide()
+    }
+
     private fun setupSignifier(){
-        viewModel.apply {
+        registerViewModel.apply {
             isLoading.observe(this@RegisterActivity) {
                 showLoading(it)
             }
@@ -83,7 +96,7 @@ class RegisterActivity : AppCompatActivity() {
                 hideKeyboard(this@RegisterActivity)
             }
 
-            btnToLogin.setOnClickListener {
+            btnRegToLogin.setOnClickListener {
                 goToLogin()
             }
 
@@ -104,8 +117,9 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding?.progressBar?.visibility = visibility(isLoading)
+        binding?.registerProgressBar?.visibility = visibility(isLoading)
     }
+
     private fun tryRegister() {
         binding?.apply {
 
@@ -118,7 +132,7 @@ class RegisterActivity : AppCompatActivity() {
                 return
             }
 
-            viewModel.register(
+            registerViewModel.register(
                 edtNama.text.toString(),
                 edtEmail.text.toString(),
                 edtPassword.text.toString()
@@ -126,8 +140,4 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        supportActionBar?.hide()
-    }
 }

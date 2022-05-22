@@ -1,24 +1,21 @@
 package com.juned.dicodingstoryapp.ui.view.story
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.gson.Gson
-import com.juned.dicodingstoryapp.data.api.ApiConfig
+import android.location.Location
+import androidx.lifecycle.*
 import com.juned.dicodingstoryapp.data.api.ApiService
-import com.juned.dicodingstoryapp.data.api.response.MessageResponse
+import com.juned.dicodingstoryapp.data.repository.StoryRepository
 import com.juned.dicodingstoryapp.helper.Event
+import com.juned.dicodingstoryapp.helper.getErrorResponse
 import com.juned.dicodingstoryapp.helper.reduceFileImage
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import retrofit2.HttpException
 import java.io.File
 
-class AddStoryViewModel : ViewModel() {
+class AddStoryViewModel(private val storyRepository: StoryRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -28,8 +25,12 @@ class AddStoryViewModel : ViewModel() {
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun uploadStory(image: File, description: String, auth: String) {
-        val reducedImage = reduceFileImage(image)
+    fun uploadStory(image: File, description: String, location: Location? = null, compress: Boolean = true) {
+        val reducedImage = if (compress) {
+            reduceFileImage(image)
+        } else {
+            image
+        }
 
         val descPart = description.toRequestBody("text/plain".toMediaType())
         val imageMultiPart = MultipartBody.Part.createFormData(
@@ -38,30 +39,43 @@ class AddStoryViewModel : ViewModel() {
             reducedImage.asRequestBody("image/jpeg".toMediaType())
         )
 
+        val params = mutableMapOf(
+            "description" to descPart
+        )
+
+        if (location != null) {
+            val latPart = location.latitude.toString().toRequestBody("text/plain".toMediaType())
+            val lonPart = location.longitude.toString().toRequestBody("text/plain".toMediaType())
+
+            params.apply {
+                put("lat", latPart)
+                put("lon", lonPart)
+            }
+        }
+
         _isLoading.value = true
-        ApiConfig.getApiService().addStory(imageMultiPart, descPart, auth)
-            .enqueue(object : Callback<MessageResponse> {
-                override fun onResponse(
-                    call: Call<MessageResponse>,
-                    response: Response<MessageResponse>
-                ) {
-                    _isLoading.value = false
+        viewModelScope.launch {
+            try {
+                _isSuccess.value = Event(storyRepository.addNewStory(imageMultiPart, HashMap(params)))
+            } catch (httpEx: HttpException) {
+                httpEx.response()?.errorBody()?.let {
+                    val errorResponse = getErrorResponse(it)
 
-                    if (response.isSuccessful) {
-                        _isSuccess.value = Event(true)
-                    } else {
-                        val errorMessage = Gson().fromJson(
-                            response.errorBody()?.charStream(),
-                            MessageResponse::class.java
-                        )
-                        _error.value = Event(errorMessage.message)
-                    }
+                    _error.value = Event(errorResponse.message)
                 }
+            } catch (genericEx: Exception) {
+                _error.value = Event(genericEx.localizedMessage ?: "")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
-                override fun onFailure(call: Call<MessageResponse>, t: Throwable) {
-                    _isLoading.value = false
-                    _error.value = Event(t.message.toString())
-                }
-            })
+    @Suppress("UNCHECKED_CAST")
+    class Factory(private val storyRepository: StoryRepository) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return AddStoryViewModel(storyRepository) as T
+        }
     }
 }

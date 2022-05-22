@@ -11,13 +11,11 @@
     <string name="register_success">Berhasil terdaftar</string>
     <string name="login_success">Berhasil login</string>
     <string name="add_btn_description">Tambahkan story baru</string>
-    <string name="not_found">Tidak ditemukan</string>
     <string name="nama_user">Nama user</string>
     <string name="home_greeting">Hi, Teman!</string>
     <string name="home_welcome_greeting">Selamat datang di Dicoding Story</string>
     <string name="upload">upload</string>
     <string name="gallery">gallery</string>
-    <string name="camera">camera</string>
     <string name="camera_x">cameraX</string>
     <string name="add_description">Masukkan caption yang indah</string>
     <string name="description">deskripsi.</string>
@@ -27,13 +25,15 @@
     <string name="capture_image">capture image</string>
     <string name="change_camera">change_camera</string>
     <string name="detail_description">detail description</string>
-    <string name="username">username</string>
     <string name="register_message">Daftarkan dirimu!</string>
     <string name="default_user">user tidak dikenali</string>
     <string name="stories_content_description">Story oleh %1$s</string>
     <string name="widget_empty_data">Data tidak ditemukan atau tidak dapat diakses</string>
-    <string name="widget_login_text" >Mohon login terlebih dahulu</string>
-    <string name="logging_in">mencoba login</string>
     <string name="error_upload_empty">Silakan masukkan berkas gambar terlebih dahulu.</string>
+    <string name="generic_error">Ada sesuatu yang salah</string>
+    <string name="loading_data">Menunggu…</string>
+    <string name="marker_snippet">Klik untuk membuka cerita</string>
+    <string name="retry">coba lagi</string>
+    <string name="permission_denied">Izin tidak diberikan!</string>
 
 </resources>

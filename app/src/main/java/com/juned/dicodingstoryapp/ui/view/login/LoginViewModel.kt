@@ -1,18 +1,20 @@
 package com.juned.dicodingstoryapp.ui.view.login
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.google.gson.Gson
 import com.juned.dicodingstoryapp.data.api.ApiConfig
 import com.juned.dicodingstoryapp.data.api.response.LoginResponse
-import com.juned.dicodingstoryapp.data.api.response.MessageResponse
+import com.juned.dicodingstoryapp.data.api.response.GeneralResponse
+import com.juned.dicodingstoryapp.data.repository.AuthRepository
 import com.juned.dicodingstoryapp.helper.Event
+import com.juned.dicodingstoryapp.helper.getErrorResponse
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
@@ -24,26 +26,29 @@ class LoginViewModel : ViewModel() {
 
     fun login(email: String, password: String) {
         _isLoading.value = true
-        ApiConfig.getApiService().login(email, password).enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                _isLoading.value = false
 
-                if (response.isSuccessful) {
-                    val token = response.body()?.loginResult?.token ?: ""
-                    _token.value = Event(token)
-                } else {
-                    val errorMessage = Gson().fromJson(
-                        response.errorBody()?.charStream(),
-                        MessageResponse::class.java
-                    )
-                    _error.value = Event(errorMessage.message)
+        viewModelScope.launch {
+            try {
+                _token.value = Event(authRepository.login(email, password))
+            } catch (httpEx: HttpException) {
+                httpEx.response()?.errorBody()?.let {
+                    val errorResponse = getErrorResponse(it)
+
+                    _error.value = Event(errorResponse.message)
                 }
-            }
-
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+            } catch (genericEx: Exception) {
+                _error.value = Event(genericEx.localizedMessage ?: "")
+            } finally {
                 _isLoading.value = false
-                _error.value = Event(t.message.toString())
             }
-        })
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    class Factory(private val authRepository: AuthRepository) :
+        ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return LoginViewModel(authRepository) as T
+        }
     }
 }

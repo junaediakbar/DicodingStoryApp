@@ -6,13 +6,15 @@ import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.Environment
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import com.juned.dicodingstoryapp.R
+import com.juned.dicodingstoryapp.data.api.response.GeneralResponse
+import okhttp3.ResponseBody
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -93,4 +95,9 @@ fun uriToFile(selectedImg: Uri, context: Context): File {
 
     return myFile
 }
+
+fun getErrorResponse(body: ResponseBody): GeneralResponse = Gson().fromJson(
+    body.charStream(),
+    GeneralResponse::class.java
+)
 

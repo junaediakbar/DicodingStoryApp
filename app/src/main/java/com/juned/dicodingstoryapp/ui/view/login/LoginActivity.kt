@@ -5,7 +5,9 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.juned.dicodingstoryapp.R
+import com.juned.dicodingstoryapp.data.api.ApiConfig
 import com.juned.dicodingstoryapp.data.pref.SessionPreferences
+import com.juned.dicodingstoryapp.data.repository.AuthRepository
 import com.juned.dicodingstoryapp.databinding.ActivityLoginBinding
 import com.juned.dicodingstoryapp.helper.hideKeyboard
 import com.juned.dicodingstoryapp.helper.showSnackBar
@@ -22,7 +24,13 @@ class LoginActivity : AppCompatActivity() {
     private var _binding: ActivityLoginBinding? = null
     private val binding get() = _binding
 
-    private val loginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel by viewModels<LoginViewModel> {
+        LoginViewModel.Factory(
+            AuthRepository(
+                ApiConfig.getApiService()
+            )
+        )
+    }
 
     private val sessionViewModel by viewModels<SessionViewModel> {
         SessionViewModel.Factory(SessionPreferences.getInstance(dataStore))
@@ -40,7 +48,12 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun checkIsLogin(){
+    override fun onResume() {
+        super.onResume()
+        supportActionBar?.hide()
+    }
+
+    private fun checkIsLogin() {
         sessionViewModel.getToken().observe(this@LoginActivity) {
             if (it.isNotEmpty()) {
                 goToHome()
@@ -48,12 +61,12 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupSignifier(){
+    private fun setupSignifier() {
         loginViewModel.apply {
             isLoading.observe(this@LoginActivity, ::showLoading)
 
 
-            token.observe(this@LoginActivity) {e->
+            token.observe(this@LoginActivity) { e ->
                 e.getContentIfNotHandled()?.let {
                     loggedIn(it)
                 }
@@ -67,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTextField(){
+    private fun setupTextField() {
         binding?.apply {
             edtEmail.setValidationCallback(object : EditTextGeneral.InputValidation {
                 override val errorMessage: String
@@ -85,7 +98,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupButton(){
+    private fun setupButton() {
         binding?.apply {
             btnToRegister.setOnClickListener {
                 goToRegister()
@@ -98,7 +111,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun goToRegister(){
+    private fun goToRegister() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
         finish()
@@ -126,17 +139,15 @@ class LoginActivity : AppCompatActivity() {
                 return
             }
 
-            loginViewModel.login(this?.edtEmail?.text.toString(), this?.edtPassword?.text.toString())
+            loginViewModel.login(
+                this?.edtEmail?.text.toString(),
+                this?.edtPassword?.text.toString()
+            )
         }
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding?.progressBar?.visibility = visibility(isLoading)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        supportActionBar?.hide()
+        binding?.loadingProgressBar?.visibility = visibility(isLoading)
     }
 
 }

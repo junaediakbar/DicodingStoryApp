@@ -20,9 +20,9 @@
         tools:ignore="TextContrastCheck,TextContrastCheck" />
 
     <ImageView
-        android:id="@+id/preview_image_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/img_upload_preview"
+        android:layout_width="389dp"
+        android:layout_height="520dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -32,7 +32,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_place_holder_24" />
+        app:srcCompat="@drawable/ic_place_holder_24"
+        tools:ignore="ImageContrastCheck,ImageContrastCheck" />
 
     <Button
         android:id="@+id/galleryButton"
@@ -58,16 +59,31 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="TextContrastCheck,TextContrastCheck" />
 
+    <TextView
+        android:id="@+id/location_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/location"
+        app:layout_constraintBottom_toTopOf="@+id/galleryButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <com.juned.dicodingstoryapp.ui.widget.text.EditTextGeneral
         android:id="@+id/tv_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:hint="@string/add_description"
         android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/cameraXButton"
+        app:layout_constraintBottom_toTopOf="@+id/location_text"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/cameraXButton"
         tools:ignore="TextContrastCheck,TextContrastCheck" />
 
@@ -88,6 +104,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
+
+    <TextView
+        android:id="@+id/upload_loading_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/loading_data"
+        android:textColor="#263238"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/upload_progress_bar"
+        app:layout_constraintStart_toStartOf="@+id/upload_progress_bar"
+        app:layout_constraintTop_toBottomOf="@+id/upload_progress_bar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

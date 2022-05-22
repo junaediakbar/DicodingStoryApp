@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.juned.dicodingstoryapp.R
+import com.juned.dicodingstoryapp.data.api.ApiConfig
+import com.juned.dicodingstoryapp.data.repository.AuthRepository
 import com.juned.dicodingstoryapp.databinding.ActivityStoriesWidgetConfigureBinding
 import com.juned.dicodingstoryapp.helper.showSnackBar
 import com.juned.dicodingstoryapp.helper.visibility
@@ -26,7 +28,13 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
         SessionViewModel.Factory(SessionPreferences.getInstance(dataStore))
     }
 
-    private val loginViewModel by viewModels<LoginViewModel>()
+    private val loginViewModel by viewModels<LoginViewModel> {
+        LoginViewModel.Factory(
+            AuthRepository(
+                ApiConfig.getApiService()
+            )
+        )
+    }
 
     public override fun onCreate(icicle: Bundle?) {
         super.onCreate(icicle)
@@ -56,9 +64,6 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
                         getString(R.string.login_success),
                         Toast.LENGTH_SHORT
                     ).show()
-                    val sessionViewModel by viewModels<SessionViewModel> {
-                        SessionViewModel.Factory(SessionPreferences.getInstance(dataStore))
-                    }
                     sessionViewModel.saveToken(token)
                 }
             }
@@ -112,8 +117,18 @@ class StoriesWidgetConfigureActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        finish()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
+
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = visibility(isLoading)
+        binding.wigdetProgressBar.visibility = visibility(isLoading)
     }
 
     private fun showWidget() {

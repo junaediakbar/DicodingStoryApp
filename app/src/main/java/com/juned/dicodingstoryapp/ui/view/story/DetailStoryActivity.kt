@@ -7,6 +7,7 @@ import com.juned.dicodingstoryapp.data.api.response.StoryItem
 import com.juned.dicodingstoryapp.databinding.ActivityDetailStoryBinding
 
 class DetailStoryActivity : AppCompatActivity() {
+
     private var _binding: ActivityDetailStoryBinding? = null
     private val binding get() = _binding
 
